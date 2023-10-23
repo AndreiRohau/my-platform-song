@@ -7,7 +7,7 @@ import my.platform.dto.ResourceCreateRequestDto;
 import my.platform.dto.ResourceCreateResponseDto;
 import my.platform.dto.ResourceDeleteResponseDto;
 import my.platform.dto.ResourceGetResponseDto;
-import my.platform.exception.ResponseServiceException;
+import my.platform.exception.ResourceServiceException;
 import my.platform.service.ResourceService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class ResourceController {
         try(InputStream is = new ByteArrayInputStream(resourceById.getResource())) {
             return ResponseEntity.ok().body(new InputStreamResource(is));
         } catch (Exception e) {
-            throw ResponseServiceException.init500();
+            throw ResourceServiceException.init500();
         }
     }
 

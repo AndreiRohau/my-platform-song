@@ -17,6 +17,10 @@ public class SongServiceException extends RuntimeException {
         return new SongServiceException("500 – An internal server error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    public static SongServiceException init502() {
+        return new SongServiceException("502 – An internal server error has occurred - Bad Gateway - GATEWAY NOT FOUND", HttpStatus.BAD_GATEWAY);
+    }
+
     public static boolean isExceptionOfCode(Exception e, int httpStatusCode) {
         return e.getClass() == SongServiceException.class
                 && ((SongServiceException) e).getHttpStatusValue() == httpStatusCode;

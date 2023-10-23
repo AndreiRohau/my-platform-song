@@ -1,7 +1,7 @@
 package my.platform.converter;
 
 import my.platform.dto.ResourceCreateRequestDto;
-import my.platform.exception.ResponseServiceException;
+import my.platform.exception.ResourceServiceException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp3.LyricsHandler;
@@ -39,7 +39,7 @@ public class MultipartFileToResourceCreateRequestDtoConverter {
             dto.setResource(getAudioData(file));
             return dto;
         } catch (Exception e) {
-            throw ResponseServiceException.init500();
+            throw ResourceServiceException.init500();
         }
     }
 

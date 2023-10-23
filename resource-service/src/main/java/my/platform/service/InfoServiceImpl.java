@@ -2,7 +2,7 @@ package my.platform.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
-import my.platform.exception.ResponseServiceException;
+import my.platform.exception.ResourceServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +31,9 @@ public class InfoServiceImpl implements InfoService {
     @Value("${server.port}")
     private String serverPort;
 
+    @Value("${song.service.address}")
+    private String songServiceAddress;
+
     private final RestTemplateBuilder restTemplateBuilder;
     private RestTemplate restTemplate;
 
@@ -46,8 +49,8 @@ public class InfoServiceImpl implements InfoService {
 
     @Override
     public Map<String, String> checkInterServiceConnection(String serviceName) {
-        //todo SET URL
-        final String url = "" + "/info/status/" + serviceName;
+        // todo SET URL
+        final String url = songServiceAddress + "/info/status";
         log.info("checkInterServiceConnection(); url=" + url);
 
         HttpHeaders headers = new HttpHeaders();
@@ -70,7 +73,7 @@ public class InfoServiceImpl implements InfoService {
         } catch (UnknownHostException e) {
             e.printStackTrace();
             log.info("Exception during running: InetAddress.getLocalHost().toString()");
-            throw ResponseServiceException.init500();
+            throw ResourceServiceException.init500();
         }
     }
 }

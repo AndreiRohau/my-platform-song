@@ -46,8 +46,8 @@ public class InfoServiceImpl implements InfoService {
 
     @Override
     public Map<String, String> checkInterServiceConnection(String serviceName) {
-        //todo SET URL
-        final String url = "" + "/info/status/" + serviceName;
+        // todo SET URL
+        final String url = serviceName + "/info/status";
         log.info("checkInterServiceConnection(); url=" + url);
 
         HttpHeaders headers = new HttpHeaders();

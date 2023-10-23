@@ -1,6 +1,6 @@
 package my.platform.controller;
 
-import my.platform.exception.ResponseServiceException;
+import my.platform.exception.ResourceServiceException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +18,7 @@ public class ResourceControllerValidator {
 
     private void validateRequestContentType(MultipartFile file) {
         if (!AUDIO_MPEG.equals(file.getContentType())) {
-            throw ResponseServiceException.init400();
+            throw ResourceServiceException.init400();
         }
     }
 
@@ -26,7 +26,7 @@ public class ResourceControllerValidator {
         String[] splitFilename = file.getOriginalFilename().split("\\.");
         String ext = splitFilename[splitFilename.length - 1];
         if (!ext.equals(MP3)) {
-            throw ResponseServiceException.init400();
+            throw ResourceServiceException.init400();
         }
     }
 }

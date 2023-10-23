@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import my.platform.dto.*;
 import my.platform.entity.Resource;
-import my.platform.exception.ResponseServiceException;
+import my.platform.exception.ResourceServiceException;
 import my.platform.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static my.platform.exception.ResponseServiceException.isExceptionOfCode;
+import static my.platform.exception.ResourceServiceException.isExceptionOfCode;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +28,8 @@ import static my.platform.exception.ResponseServiceException.isExceptionOfCode;
 @Log
 public class ResourceServiceImpl implements ResourceService {
 
-    @Value("${song.service.save.url}")
-    private String songServiceSaveUrl;
+    @Value("${song.service.api.save}")
+    private String songServiceApiSave;
 
     private final ResourceServiceValidator validator;
     private final ResourceRepository resourceRepository;
@@ -53,7 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
             if (isExceptionOfCode(e, HttpStatus.NOT_FOUND.value())) {
                 throw e;
             } else {
-                throw ResponseServiceException.init500();
+                throw ResourceServiceException.init500();
             }
         }
     }
@@ -74,14 +74,14 @@ public class ResourceServiceImpl implements ResourceService {
 
             return new ResourceCreateResponseDto(resourceId);
         } catch (Exception e) {
-            throw ResponseServiceException.init500();
+            throw ResourceServiceException.init500();
         }
     }
 
     private void saveMetadata(SongDto songDto) {
         System.out.println(songDto);
         // save resourceCreateRequestDto in Song Service using restCall
-        String url = songServiceSaveUrl;
+        String url = songServiceApiSave;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -114,7 +114,7 @@ public class ResourceServiceImpl implements ResourceService {
 
             return  new ResourceDeleteResponseDto(existingIds);
         } catch (Exception e) {
-            throw ResponseServiceException.init500();
+            throw ResourceServiceException.init500();
         }
     }
 }
