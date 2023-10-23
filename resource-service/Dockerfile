@@ -10,10 +10,13 @@ COPY .mvn .mvn
 
 # Copy the project files to the container
 COPY pom.xml .
+RUN ./mvnw dependency:go-offline -B
 COPY src src
 
 # Build the application using Maven Wrapper
 RUN ./mvnw clean package -DskipTests
 
+EXPOSE 8081
 # Set the entrypoint command to run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "target/resource-service-1.0-SNAPSHOT.jar"]
+RUN cp "target/resource-service-1.0-SNAPSHOT.jar" app.jar
+CMD ["java", "-jar", "app.jar"]
