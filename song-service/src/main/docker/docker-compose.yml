@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  apps:
+    image: 'song-service:latest'
+    build:
+      context: .
+    ports:
+      - 8082:8082 #gives access to local
+    container_name: apps
+    networks:
+      - my_bridge_network
+    depends_on:
+      - dbs
+    environment:
+      - SERVER_ADDRESS=${SERVER_ADDRESS}
+      - RS_DB_POSTGRES=${SS_DB_POSTGRES}
+      - SPRING_DATASOURCE_URL=${SS_SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SS_SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SS_SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO}
+      - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=${SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION}
+      - SPRING_DATASOURCE_DRIVERCLASSNAME=${SPRING_DATASOURCE_DRIVERCLASSNAME}
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT}
+      - SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE=${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE}
+      - SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE=${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE}
+      - VALIDATOR_PARAMETER_LENGTH=${VALIDATOR_PARAMETER_LENGTH}
+
+  dbs:
+    image: 'postgres:13.1-alpine'
+    ports:
+      - 5432
+    container_name: dbs
+    networks:
+      - my_bridge_network
+    environment:
+      - POSTGRES_DB=${SS_DB_POSTGRES}
+      - POSTGRES_USER=${SS_SPRING_DATASOURCE_USERNAME}
+      - POSTGRES_PASSWORD=${SS_SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
+
+networks:
+  my_bridge_network:
