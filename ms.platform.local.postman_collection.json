@@ -1,0 +1,228 @@
+{
+	"info": {
+		"_postman_id": "801296ef-d55a-4aaf-9c41-94a1a978fa35",
+		"name": "ms.platform.local",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15843129"
+	},
+	"item": [
+		{
+			"name": "8081-get-resource",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/v1/api/resources/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"api",
+						"resources",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8081-save-resource-and-meta",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "audio/mpeg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/rohau/Desktop/Umbree - Isaac.mp3"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8081/v1/api/resources/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"api",
+						"resources",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8081-delete-resources",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/v1/api/resources?id=0,1,2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"api",
+						"resources"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "0,1,2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8082-get-song",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/v1/api/songs/0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v1",
+						"api",
+						"songs",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8082-delete-songs",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/v1/api/songs?id=0,1,2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v1",
+						"api",
+						"songs"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "0,1,2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8081-get-info-status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/info/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"info",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8082-get-info-status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/info/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"info",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8081-get-info-status-INTER-CONNECTION",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/info/status/song-service",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"info",
+						"status",
+						"song-service"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8082-get-info-status-INTER-CONNECTION Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/info/status/resource-service",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"info",
+						"status",
+						"resource-service"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

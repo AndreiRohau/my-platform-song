@@ -1,4 +1,18 @@
-Run docker-compose up
+Run:
+ ```
+ docker-compose up
+ ```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -9,8 +23,8 @@ http://localhost:8081/v1/api/resources/1
 
 POST save audio and meta
 http://localhost:8081/v1/api/resources/
-Content-Type audio/mpeg
-file -> of.mp3
+- Content-Type audio/mpeg
+- file -> of.mp3
 
 DELETE audio bin
 http://localhost:8081/v1/api/resources?id=0,1,2
