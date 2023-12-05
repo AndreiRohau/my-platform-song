@@ -66,6 +66,13 @@ spec:
               value: http://app-song-service:8082
             - name: SONG_SERVICE_API_SAVE
               value: http://app-song-service:8082/v1/api/songs
+          volumeMounts:
+            - name: data-volume
+              mountPath: "/app-data"
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: db-rs-pvc
 
 ---
 # resource-service database Service
@@ -75,23 +82,23 @@ metadata:
   name: db-resource-service
   namespace: k8s-program
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: db-resource-service
   ports:
     - protocol: TCP
       port: 5432
       targetPort: 5432
-      nodePort: 30002
 
 ---
 # resource-service database Deployment
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: db-resource-service-deployment
+  name: db-resource-service-statefulset
   namespace: k8s-program
 spec:
+  serviceName: db-resource-service
   replicas: 1
   selector:
     matchLabels:
@@ -113,13 +120,16 @@ spec:
               value: rsuser
             - name: POSTGRES_PASSWORD
               value: rspwd
-          volumeMounts:
-            - name: data-volume
-              mountPath: "/app-data"
-      volumes:
-        - name: data-volume
-          persistentVolumeClaim:
-            claimName: db-rs-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: data-volume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: hostpath
+        resources:
+          requests:
+            storage: 1Gi
 
 ---
 # song-service Service
@@ -194,23 +204,23 @@ metadata:
   name: db-song-service
   namespace: k8s-program
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: db-song-service
   ports:
     - protocol: TCP
       port: 5432
       targetPort: 5432
-      nodePort: 30004
 
 ---
 # song-service database Deployment
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: db-song-service-deployment
+  name: db-song-service-statefulset
   namespace: k8s-program
 spec:
+  serviceName: db-song-service
   replicas: 1
   selector:
     matchLabels:
@@ -239,3 +249,13 @@ spec:
         - name: init-scripts
           hostPath:
             path: /init-scripts/init.sql #not working
+  volumeClaimTemplates:
+    - metadata:
+        name: data-volume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: hostpath
+        resources:
+          requests:
+            storage: 1Gi

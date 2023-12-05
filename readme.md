@@ -7,17 +7,6 @@ Run:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 GET audio bin
 http://localhost:8081/v1/api/resources/1
 
@@ -65,7 +54,7 @@ kubectl delete -f manifest.yaml
 kubectl delete -f volume.yaml
 kubectl delete -f namespace.yaml
 
-kubectl delete pod db-resource-service-deployment-5fbb95846f-n4cvx -n=k8s-program
+kubectl delete pod db-song-service-statefulset-0 -n=k8s-program
 
 ### Logs or info
 kubectl describe pods app-resource-service-deployment-69585dd49c-6jhrz -n=k8s-program
