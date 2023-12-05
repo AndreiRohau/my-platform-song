@@ -65,14 +65,16 @@ kubectl delete -f manifest.yaml
 kubectl delete -f volume.yaml
 kubectl delete -f namespace.yaml
 
+kubectl delete pod db-resource-service-deployment-5fbb95846f-n4cvx -n=k8s-program
+
 ### Logs or info
-kubectl describe pods db-resource-service-deployment-c75cd4c85-x9wwm -n=k8s-program
-kubectl logs db-resource-service-deployment-c75cd4c85-x9wwm -n k8s-program
+kubectl describe pods app-resource-service-deployment-69585dd49c-6jhrz -n=k8s-program
+kubectl logs app-resource-service-deployment-69585dd49c-6jhrz -n k8s-program
 
 ### Testing using terminal
-kubectl exec -it discovery-service-78f4c4d78b-5llfm -n k8s-program -c discovery-service -- /bin/bash
+kubectl exec -it db-resource-service-deployment-5fbb95846f-wvdn7 -n k8s-program -c db-resource-service -- /bin/bash
 
-
+psql -h localhost -p 5432 -U rsuser -d resource_service_db
 
 
 
