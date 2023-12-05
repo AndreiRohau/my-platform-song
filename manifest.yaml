@@ -29,7 +29,7 @@ metadata:
   name: app-resource-service-deployment
   namespace: k8s-program
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: app-resource-service
@@ -145,7 +145,7 @@ metadata:
   name: app-song-service-deployment
   namespace: k8s-program
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: app-song-service
