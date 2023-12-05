@@ -1,9 +1,3 @@
-# Namespace
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: k8s-program
-
 ---
 # resource-service Service
 apiVersion: v1
@@ -119,6 +113,13 @@ spec:
               value: rsuser
             - name: POSTGRES_PASSWORD
               value: rspwd
+          volumeMounts:
+            - name: data-volume
+              mountPath: "/app-data"
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: db-rs-pvc
 
 ---
 # song-service Service
