@@ -36,3 +36,18 @@ http://localhost:8082/v1/api/songs/0
 
 DELETE song meta
 http://localhost:8082/v1/api/songs?id=0,1,2
+
+
+
+kubectl apply -f manifest.yaml
+kubectl get pods -n k8s-program -o wide
+kubectl delete -f manifest.yaml
+
+kubectl logs app-resource-service-deployment-69585dd49c-kx9l8 -n k8s-program
+
+docker build -t andreirohau/resource-service .
+docker push andreirohau/resource-service
+
+docker build -t andreirohau/song-service .
+docker push andreirohau/song-service
+

@@ -1,0 +1,240 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-program
+
+---
+# resource-service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-resource-service
+  namespace: k8s-program
+spec:
+  type: NodePort
+  selector:
+    app: app-resource-service
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30001
+
+---
+# resource-service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-resource-service-deployment
+  namespace: k8s-program
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-resource-service
+  template:
+    metadata:
+      labels:
+        app: app-resource-service
+    spec:
+      containers:
+        - name: app-resource-service
+          image: andreirohau/resource-service:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SERVER_ADDRESS
+              value: 0.0.0.0
+            - name: RS_DB_POSTGRES
+              value: resource_service_db
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://db-resource-service:5432/resource_service_db?createDatabaseIfNotExist=true&useSSL=false
+            - name: SPRING_DATASOURCE_USERNAME
+              value: rsuser
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: rspwd
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
+              value: "true"
+            - name: SPRING_DATASOURCE_DRIVERCLASSNAME
+              value: org.postgresql.Driver
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+              value: org.hibernate.dialect.PostgreSQLDialect
+            - name: SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE
+              value: 20MB
+            - name: SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE
+              value: 20MB
+            - name: VALIDATOR_PARAMETER_LENGTH
+              value: "200"
+            - name: SONG_SERVICE_ADDRESS
+              value: http://app-song-service:8082
+            - name: SONG_SERVICE_API_SAVE
+              value: http://app-song-service:8082/v1/api/songs
+
+---
+# resource-service database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-resource-service
+  namespace: k8s-program
+spec:
+  type: NodePort
+  selector:
+    app: db-resource-service
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+      nodePort: 30002
+
+---
+# resource-service database Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-resource-service-deployment
+  namespace: k8s-program
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-resource-service
+  template:
+    metadata:
+      labels:
+        app: db-resource-service
+    spec:
+      containers:
+        - name: db-resource-service
+          image: postgres:13.1-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: resource_service_db
+            - name: POSTGRES_USER
+              value: rsuser
+            - name: POSTGRES_PASSWORD
+              value: rspwd
+
+---
+# song-service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-song-service
+  namespace: k8s-program
+spec:
+  type: NodePort
+  selector:
+    app: app-song-service
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+      nodePort: 30003
+
+---
+# song-service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-song-service-deployment
+  namespace: k8s-program
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-song-service
+  template:
+    metadata:
+      labels:
+        app: app-song-service
+    spec:
+      containers:
+        - name: app-song-service
+          image: andreirohau/song-service:latest
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SERVER_ADDRESS
+              value: 0.0.0.0
+            - name: RS_DB_POSTGRES
+              value: song_service_db
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://db-song-service:5432/song_service_db?createDatabaseIfNotExist=true&useSSL=false
+            - name: SPRING_DATASOURCE_USERNAME
+              value: ssuser
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: sspwd
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
+              value: "true"
+            - name: SPRING_DATASOURCE_DRIVERCLASSNAME
+              value: org.postgresql.Driver
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+              value: org.hibernate.dialect.PostgreSQLDialect
+            - name: SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE
+              value: 20MB
+            - name: SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE
+              value: 20MB
+            - name: VALIDATOR_PARAMETER_LENGTH
+              value: "200"
+
+---
+# song-service database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-song-service
+  namespace: k8s-program
+spec:
+  type: NodePort
+  selector:
+    app: db-song-service
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+      nodePort: 30004
+
+---
+# song-service database Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-song-service-deployment
+  namespace: k8s-program
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-song-service
+  template:
+    metadata:
+      labels:
+        app: db-song-service
+    spec:
+      containers:
+        - name: db-song-service
+          image: postgres:13.1-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: song_service_db
+            - name: POSTGRES_USER
+              value: ssuser
+            - name: POSTGRES_PASSWORD
+              value: sspwd
+          volumeMounts:
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: init-scripts
+          hostPath:
+            path: /init-scripts/init.sql #not working
