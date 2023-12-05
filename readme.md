@@ -30,6 +30,7 @@ http://localhost:8082/v1/api/songs?id=0,1,2
 
 ---
 # K8S
+## kubernetes-for-java-engineers-2023
 ### https://hub.docker.com/u/andreirohau
 
 ### COMMANDS
@@ -68,15 +69,6 @@ psql -h localhost -p 5432 -U rsuser -d resource_service_db
 Note: You can also use 
 kubectl port-forward pod-name 5433:5432 
 (local machine port:container port) console command to temporarily open access to the database pod
-
-## Useful links
-- [Introduction to Kubernetes](https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes)
-- [Kubernetes architecture](https://kubernetes.io/docs/concepts/overview/components/)
-- [Kubernetes objects](https://medium.com/devops-mojo/kubernetes-objects-resources-overview-introduction-understanding-kubernetes-objects-24d7b47bb018)
-- [Workload resources](https://kubernetes.io/docs/concepts/workloads/controllers/)
-- [Kubernetes Persistent Volume Claims explained](https://cloud.netapp.com/blog/cvo-blg-kubernetes-persistent-volume-claims-explained)
-- [Local Persistent Volumes](https://vocon-it.com/2018/12/20/kubernetes-local-persistent-volumes/)
-- [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset)
 
 
 
