@@ -4,14 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import my.platform.service.InfoService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/info")
@@ -37,9 +40,25 @@ public class InfoController {
         return ResponseEntity.ok(map);
     }
 
-    @GetMapping(value = "/create/{filename}")
-    public ResponseEntity<String> createFile(@PathVariable String filename) {
-        log.info("Endpoint-get-path=" + "/create/{" + filename + "}");
+    @GetMapping(value = "/ls")
+    public ResponseEntity<Set<String>> listFiles(@RequestParam String dir) {
+        log.info("Endpoint-get-path=" + "/ls?dir=" + dir + "}");
+        Set<String> response = null;
+        try (Stream<Path> stream = Files.list(Paths.get(dir))) {
+            response = stream
+                    .filter(file -> !Files.isDirectory(file))
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .collect(Collectors.toSet());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "/create")
+    public ResponseEntity<String> createFile(@RequestParam String filename) {
+        log.info("Endpoint-get-path=" + "/create?filename=" + filename + "}");
         String response = null;
         try {
             File myObj = new File(filename);
@@ -58,9 +77,9 @@ public class InfoController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(value = "/delete/{filename}")
-    public ResponseEntity<String> deleteFile(@PathVariable String filename) {
-        log.info("Endpoint-get-path=" + "/delete/{" + filename + "}");
+    @DeleteMapping(value = "/delete")
+    public ResponseEntity<String> deleteFile(@RequestParam String filename) {
+        log.info("Endpoint-get-path=" + "/delete?filename=" + filename + "}");
         String response = null;
         File myObj = new File(filename);
         if (myObj.delete()) {
