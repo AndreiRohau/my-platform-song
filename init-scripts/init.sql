@@ -6,7 +6,9 @@ CREATE TABLE IF NOT EXISTS songs (
     album VARCHAR(255) NOT NULL,
     length VARCHAR(255) NOT NULL,
     resource_id VARCHAR(255) NOT NULL,
-    year VARCHAR(255) NOT NULL
+    year VARCHAR(255) NOT NULL,
+    genre varchar(255) DEFAULT NULL
+
 );
 
 INSERT INTO songs(song_id, name, artist, album, length, resource_id, year)

@@ -58,10 +58,10 @@ kubectl delete -f namespace.yaml
 kubectl delete pod app-resource-service-deployment-77d4ddd9c7-r6ksb -n=k8s-program
 
 ### Logs or info
-kubectl describe pods app-resource-service-deployment-cbcf5476-5782m -n=k8s-program
+kubectl describe pods app-resource-service-deployment-6c9c475c79-878ns -n=k8s-program
 kubectl describe pods db-resource-service-statefulset-0 -n=k8s-program
 kubectl logs db-resource-service-statefulset-0 -n k8s-program
-kubectl logs app-resource-service-deployment-cbcf5476-5782m -n k8s-program
+kubectl logs app-resource-service-deployment-6c9c475c79-878ns -n k8s-program
 
 ### Testing using terminal
 kubectl exec -it db-resource-service-statefulset-0 -n k8s-program -c db-resource-service -- /bin/bash
@@ -71,6 +71,10 @@ cd ../app-data
 
 psql -h localhost -p 5432 -U rsuser -d resource_service_db
 
+### Deployment strategies + Deployment history
+kubectl rollout history deployment/app-resource-service-deployment -n k8s-program
+kubectl rollout undo deployment/app-resource-service-deployment -n k8s-program
+kubectl rollout status deployment/app-resource-service-deployment -n k8s-program
 
 
 Note: You can also use 
