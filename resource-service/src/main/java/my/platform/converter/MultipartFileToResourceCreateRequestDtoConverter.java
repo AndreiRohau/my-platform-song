@@ -16,6 +16,7 @@ import java.io.InputStream;
 @Component
 public class MultipartFileToResourceCreateRequestDtoConverter {
     public static final String
+            GENRE = "xmpDM:genre",
             TITLE = "dc:title",
             ARTIST = "xmpDM:artist",
             RELEASE_DATE = "xmpDM:releaseDate",
@@ -68,6 +69,8 @@ public class MultipartFileToResourceCreateRequestDtoConverter {
                 dto.getSongDto().setLength(value);
             } else if (RELEASE_DATE.equals(name)) {
                 dto.getSongDto().setYear(value);
+            } else if (GENRE.equals(name)) {
+                dto.getSongDto().setGenre(value);
             }
         }
     }

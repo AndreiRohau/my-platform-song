@@ -29,6 +29,8 @@ public class Song {
     private String resourceId;
     @Column(name = "year")
     private String year;
+    @Column(name = "genre")
+    private String genre;
 
     public Song(SongDto songDto) {
         this.name = songDto.getName();
@@ -37,5 +39,6 @@ public class Song {
         this.length = songDto.getLength();
         this.resourceId = songDto.getResourceId();
         this.year = songDto.getYear();
+        this.genre = songDto.getGenre();
     }
 }

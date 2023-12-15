@@ -13,6 +13,7 @@ public class SongGetResponseDto {
     private String length;
     private String resourceId;
     private String year;
+    private String genre;
 
     public SongGetResponseDto(Song song) {
         this.name = song.getName();
@@ -21,5 +22,6 @@ public class SongGetResponseDto {
         this.length = song.getLength();
         this.resourceId = song.getResourceId();
         this.year = song.getYear();
+        this.genre = song.getGenre();
     }
 }
