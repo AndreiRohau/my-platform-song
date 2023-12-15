@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -33,5 +35,40 @@ public class InfoController {
         Map<String, String> map = infoService.checkInterServiceConnection(serviceName);
 
         return ResponseEntity.ok(map);
+    }
+
+    @GetMapping(value = "/create/{filename}")
+    public ResponseEntity<String> createFile(@PathVariable String filename) {
+        log.info("Endpoint-get-path=" + "/create/{" + filename + "}");
+        String response = null;
+        try {
+            File myObj = new File(filename);
+            if (myObj.createNewFile()) {
+                response = "File created: " + myObj.getName();
+                System.out.println(response);
+            } else {
+                response = "File already exists.";
+                System.out.println(response);
+            }
+        } catch (IOException e) {
+            response = "An error occurred.";
+            System.out.println(response);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/delete/{filename}")
+    public ResponseEntity<String> deleteFile(@PathVariable String filename) {
+        log.info("Endpoint-get-path=" + "/delete/{" + filename + "}");
+        String response = null;
+        File myObj = new File(filename);
+        if (myObj.delete()) {
+            response = "Deleted the file: " + myObj.getName();
+        } else {
+            response = "Failed to delete the file.";
+        }
+        System.out.println(response);
+        return ResponseEntity.ok(response);
     }
 }
