@@ -18,5 +18,5 @@ RUN ./mvnw clean package -DskipTests
 
 EXPOSE 8082
 # Set the entrypoint command to run the Spring Boot application
-RUN cp "target/song-service-1.0-SNAPSHOT.jar" app.jar
+RUN cp "target/song-service-3.0.jar" app.jar
 CMD ["java", "-jar", "app.jar"]

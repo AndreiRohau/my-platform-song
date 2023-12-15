@@ -26,6 +26,13 @@ public class InfoController {
         return ResponseEntity.ok(map);
     }
 
+    @GetMapping(value = "/status/v2")
+    public ResponseEntity<Map<String, String>> getStatusV2() {
+        log.info("Endpoint-get-path=" + "/info/status/v2");
+        Map<String, String> map = infoService.getCurrentStatus();
+        return ResponseEntity.ok(map);
+    }
+
     @GetMapping(value = "/status/{service-name}")
     public ResponseEntity<Map<String, String>> checkInterServiceConnection(@PathVariable("service-name") String serviceName) {
         log.info("Endpoint-get-path=" + "/status/{" + serviceName + "}");
