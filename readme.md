@@ -71,6 +71,8 @@ cd ../app-data
 
 psql -h localhost -p 5432 -U rsuser -d resource_service_db
 
+
+
 Note: You can also use 
 kubectl port-forward pod-name 5433:5432 
 (local machine port:container port) console command to temporarily open access to the database pod
