@@ -1,4 +1,39 @@
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secrets
+  namespace: k8s-program
+type: Opaque
+stringData:
+  RS_SPRING_DATASOURCE_USERNAME: rsuser
+  RS_SPRING_DATASOURCE_PASSWORD: rspwd
+  SS_SPRING_DATASOURCE_USERNAME: ssuser
+  SS_SPRING_DATASOURCE_PASSWORD: sspwd
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: var-map
+  namespace: k8s-program
+data:
+  SERVER_ADDRESS: 0.0.0.0
+  RS_DB_POSTGRES: resource_service_db
+  RS_SPRING_DATASOURCE_URL: jdbc:postgresql://db-resource-service:5432/resource_service_db?createDatabaseIfNotExist=true&useSSL=false
+  SS_DB_POSTGRES: song_service_db
+  SS_SPRING_DATASOURCE_URL: jdbc:postgresql://db-song-service:5432/song_service_db?createDatabaseIfNotExist=true&useSSL=false
+  SPRING_JPA_HIBERNATE_DDL_AUTO: update
+  SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: "true"
+  SPRING_DATASOURCE_DRIVERCLASSNAME: org.postgresql.Driver
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+  SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 20MB
+  SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 20MB
+  VALIDATOR_PARAMETER_LENGTH: "200"
+  SONG_SERVICE_ADDRESS: http://app-song-service:8082
+  SONG_SERVICE_API_SAVE: http://app-song-service:8082/v1/api/songs
+
+---
 # resource-service Service
 apiVersion: v1
 kind: Service
@@ -39,40 +74,112 @@ spec:
             - containerPort: 8081
           env:
             - name: SERVER_ADDRESS
-              value: 0.0.0.0
+#              value: 0.0.0.0
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SERVER_ADDRESS
             - name: RS_DB_POSTGRES
-              value: resource_service_db
+#              value: resource_service_db
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: RS_DB_POSTGRES
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://db-resource-service:5432/resource_service_db?createDatabaseIfNotExist=true&useSSL=false
+#              value: jdbc:postgresql://db-resource-service:5432/resource_service_db?createDatabaseIfNotExist=true&useSSL=false
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: RS_SPRING_DATASOURCE_URL
             - name: SPRING_DATASOURCE_USERNAME
-              value: rsuser
+#              value: rsuser
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: RS_SPRING_DATASOURCE_USERNAME
             - name: SPRING_DATASOURCE_PASSWORD
-              value: rspwd
+#              value: rspwd
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: RS_SPRING_DATASOURCE_PASSWORD
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-              value: update
+#              value: update
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_HIBERNATE_DDL_AUTO
             - name: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
-              value: "true"
+#              value: "true"
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
             - name: SPRING_DATASOURCE_DRIVERCLASSNAME
-              value: org.postgresql.Driver
+#              value: org.postgresql.Driver
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_DATASOURCE_DRIVERCLASSNAME
             - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
-              value: org.hibernate.dialect.PostgreSQLDialect
+#              value: org.hibernate.dialect.PostgreSQLDialect
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
             - name: SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE
-              value: 20MB
+#              value: 20MB
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE
             - name: SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE
-              value: 20MB
+#              value: 20MB
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE
             - name: VALIDATOR_PARAMETER_LENGTH
-              value: "200"
+#              value: "200"
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: VALIDATOR_PARAMETER_LENGTH
             - name: SONG_SERVICE_ADDRESS
-              value: http://app-song-service:8082
+#              value: http://app-song-service:8082
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SONG_SERVICE_ADDRESS
             - name: SONG_SERVICE_API_SAVE
-              value: http://app-song-service:8082/v1/api/songs
+#              value: http://app-song-service:8082/v1/api/songs
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SONG_SERVICE_API_SAVE
           volumeMounts:
-            - name: resource-service-volume
+            - name: app-resource-service-volume
               mountPath: "/app-data"
       volumes:
-        - name: resource-service-volume
+        - name: app-resource-service-volume
           persistentVolumeClaim:
             claimName: app-resource-service-pvc
+
+---
+## INIT SQL resource-service database ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-resource-service-init
+  namespace: k8s-program
+  labels:
+    app: db-resource-service
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS public.resources (
+    resource_id SERIAL PRIMARY KEY,
+    resource OID
+    );
 
 ---
 # resource-service database Service
@@ -115,11 +222,30 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: resource_service_db
+#              value: resource_service_db
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: RS_DB_POSTGRES
             - name: POSTGRES_USER
-              value: rsuser
+#              value: rsuser
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: RS_SPRING_DATASOURCE_USERNAME
             - name: POSTGRES_PASSWORD
-              value: rspwd
+#              value: rspwd
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: RS_SPRING_DATASOURCE_PASSWORD
+          volumeMounts:
+            - name: db-resource-service-init-volume
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: db-resource-service-init-volume
+          configMap:
+            name: db-resource-service-init
   volumeClaimTemplates:
     - metadata:
         name: db-resource-service-volume
@@ -172,29 +298,99 @@ spec:
             - containerPort: 8082
           env:
             - name: SERVER_ADDRESS
-              value: 0.0.0.0
-            - name: RS_DB_POSTGRES
-              value: song_service_db
+#              value: 0.0.0.0
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SERVER_ADDRESS
+            - name: SS_DB_POSTGRES
+#              value: song_service_db
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SS_DB_POSTGRES
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://db-song-service:5432/song_service_db?createDatabaseIfNotExist=true&useSSL=false
+#              value: jdbc:postgresql://db-song-service:5432/song_service_db?createDatabaseIfNotExist=true&useSSL=false
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SS_SPRING_DATASOURCE_URL
             - name: SPRING_DATASOURCE_USERNAME
-              value: ssuser
+#              value: ssuser
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SS_SPRING_DATASOURCE_USERNAME
             - name: SPRING_DATASOURCE_PASSWORD
-              value: sspwd
+#              value: sspwd
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SS_SPRING_DATASOURCE_PASSWORD
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-              value: update
+#              value: update
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_HIBERNATE_DDL_AUTO
             - name: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
-              value: "true"
+#              value: "true"
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
             - name: SPRING_DATASOURCE_DRIVERCLASSNAME
-              value: org.postgresql.Driver
+#              value: org.postgresql.Driver
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_DATASOURCE_DRIVERCLASSNAME
             - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
-              value: org.hibernate.dialect.PostgreSQLDialect
+#              value: org.hibernate.dialect.PostgreSQLDialect
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
             - name: SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE
-              value: 20MB
+#              value: 20MB
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE
             - name: SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE
-              value: 20MB
+#              value: 20MB
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE
             - name: VALIDATOR_PARAMETER_LENGTH
-              value: "200"
+#              value: "200"
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: VALIDATOR_PARAMETER_LENGTH
+
+---
+# INIT SQL song-service database ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-song-service-init
+  namespace: k8s-program
+  labels:
+    app: db-song-service
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS public.songs (
+      song_id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      artist VARCHAR(255) NOT NULL,
+      album VARCHAR(255) NOT NULL,
+      length VARCHAR(255) NOT NULL,
+      resource_id VARCHAR(255) NOT NULL,
+      year VARCHAR(255) NOT NULL
+    );
+
 
 ---
 # song-service database Service
@@ -237,18 +433,30 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: song_service_db
+#              value: song_service_db
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SS_DB_POSTGRES
             - name: POSTGRES_USER
-              value: ssuser
+#              value: ssuser
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SS_SPRING_DATASOURCE_USERNAME
             - name: POSTGRES_PASSWORD
-              value: sspwd
+#              value: sspwd
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SS_SPRING_DATASOURCE_PASSWORD
           volumeMounts:
-            - name: init-scripts
+            - name: db-song-service-init-volume
               mountPath: /docker-entrypoint-initdb.d
       volumes:
-        - name: init-scripts
-          hostPath:
-            path: /init-scripts/init.sql #not working
+        - name: db-song-service-init-volume
+          configMap:
+            name: db-song-service-init
   volumeClaimTemplates:
     - metadata:
         name: db-song-service-volume
