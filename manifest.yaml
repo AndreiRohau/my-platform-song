@@ -91,7 +91,7 @@ spec:
       targetPort: 5432
 
 ---
-# resource-service database Deployment
+# resource-service database StatefulSet
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -122,7 +122,7 @@ spec:
               value: rspwd
   volumeClaimTemplates:
     - metadata:
-        name: data-volume
+        name: db-resource-service-volume
       spec:
         accessModes:
           - ReadWriteOnce
@@ -213,7 +213,7 @@ spec:
       targetPort: 5432
 
 ---
-# song-service database Deployment
+# song-service database StatefulSet
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -251,7 +251,7 @@ spec:
             path: /init-scripts/init.sql #not working
   volumeClaimTemplates:
     - metadata:
-        name: data-volume
+        name: db-song-service-volume
       spec:
         accessModes:
           - ReadWriteOnce
