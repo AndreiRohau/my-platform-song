@@ -67,12 +67,12 @@ spec:
             - name: SONG_SERVICE_API_SAVE
               value: http://app-song-service:8082/v1/api/songs
           volumeMounts:
-            - name: data-volume
+            - name: resource-service-volume
               mountPath: "/app-data"
       volumes:
-        - name: data-volume
+        - name: resource-service-volume
           persistentVolumeClaim:
-            claimName: db-rs-pvc
+            claimName: app-resource-service-pvc
 
 ---
 # resource-service database Service

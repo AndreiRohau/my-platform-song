@@ -55,14 +55,17 @@ kubectl delete -f manifest.yaml
 kubectl delete -f volume.yaml
 kubectl delete -f namespace.yaml
 
-kubectl delete pod db-song-service-statefulset-0 -n=k8s-program
+kubectl delete pod app-resource-service-deployment-77d4ddd9c7-7xv2g -n=k8s-program
 
 ### Logs or info
-kubectl describe pods app-resource-service-deployment-69585dd49c-6jhrz -n=k8s-program
+kubectl describe pods app-resource-service-deployment-77d4ddd9c7-7xv2g -n=k8s-program
 kubectl logs app-resource-service-deployment-69585dd49c-6jhrz -n k8s-program
 
 ### Testing using terminal
-kubectl exec -it db-resource-service-deployment-5fbb95846f-wvdn7 -n k8s-program -c db-resource-service -- /bin/bash
+kubectl exec -it app-resource-service-deployment-77d4ddd9c7-sxgc7 -n k8s-program -c app-resource-service -- /bin/bash
+kubectl exec -it app-song-service-deployment-65574874b-6gqjd -n k8s-program -c app-song-service -- /bin/bash
+
+cd ../app-data
 
 psql -h localhost -p 5432 -U rsuser -d resource_service_db
 
