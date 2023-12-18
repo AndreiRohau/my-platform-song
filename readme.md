@@ -72,9 +72,11 @@ cd ../app-data
 psql -h localhost -p 5432 -U rsuser -d resource_service_db
 
 ### Deployment strategies + Deployment history
-kubectl rollout history deployment/app-resource-service-deployment -n k8s-program
-kubectl rollout undo deployment/app-resource-service-deployment -n k8s-program
-kubectl rollout status deployment/app-resource-service-deployment -n k8s-program
+kubectl rollout history deployment/app-song-service-deployment -n k8s-program
+kubectl rollout history deployment/app-song-service-deployment -n k8s-program --revision=2
+kubectl rollout undo deployment/app-song-service-deployment -n k8s-program
+kubectl rollout undo deployment/app-song-service-deployment -n k8s-program --to-revision=2
+kubectl rollout status deployment/app-song-service-deployment -n k8s-program
 
 
 Note: You can also use 
