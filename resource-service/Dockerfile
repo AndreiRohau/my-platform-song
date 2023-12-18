@@ -18,5 +18,5 @@ RUN ./mvnw clean package -DskipTests
 
 EXPOSE 8081
 # Set the entrypoint command to run the Spring Boot application
-RUN cp "target/resource-service-4.0.jar" app.jar
+RUN cp "target/resource-service-5.0.jar" app.jar
 CMD ["java", "-jar", "app.jar"]

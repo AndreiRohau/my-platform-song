@@ -13,7 +13,7 @@
 
     <groupId>my.platform</groupId>
     <artifactId>song-service</artifactId>
-    <version>4.0</version>
+    <version>5.0</version>
 
     <name>song-service</name>
     <description>Song Service</description>

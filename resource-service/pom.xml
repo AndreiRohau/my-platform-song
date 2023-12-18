@@ -13,7 +13,7 @@
 
     <groupId>my.platform</groupId>
     <artifactId>resource-service</artifactId>
-    <version>4.0</version>
+    <version>5.0</version>
 
     <name>resource-service</name>
     <description>Resource Service</description>
