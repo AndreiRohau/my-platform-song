@@ -74,7 +74,7 @@ spec:
     spec:
       containers:
         - name: app-resource-service
-          image: andreirohau/resource-service:3
+          image: andreirohau/resource-service:latest
           ports:
             - containerPort: 8081
           startupProbe:
@@ -82,19 +82,19 @@ spec:
               path: /actuator/health
               port: 8081
             failureThreshold: 15
-            periodSeconds: 5
-            initialDelaySeconds: 20
+            periodSeconds: 15
+            initialDelaySeconds: 40
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8081
-            initialDelaySeconds: 20
-            periodSeconds: 5
+            initialDelaySeconds: 40
+            periodSeconds: 15
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8081
-            initialDelaySeconds: 30
+            initialDelaySeconds: 40
             periodSeconds: 10
             failureThreshold: 3
           env:
@@ -267,8 +267,15 @@ spec:
           volumeMounts:
             - name: db-resource-service-init-volume
               mountPath: /docker-entrypoint-initdb.d
+          startupProbe:
+            exec:
+              command: ["pg_isready", "-U", "rsuser", "-d", "$(POSTGRES_DB)"]
+            failureThreshold: 15
+            periodSeconds: 30
+            initialDelaySeconds: 20
           readinessProbe:
             exec:
+#              command: ["pg_isready", "-U", "rsuser", "-d", "$(POSTGRES_DB)"]
               command:
                 - pg_isready
                 - -h
@@ -279,6 +286,7 @@ spec:
             periodSeconds: 5
           livenessProbe:
             exec:
+#              command: ["pg_isready", "-U", "rsuser", "-d", "$(POSTGRES_DB)"]
               command:
                 - pg_isready
                 - -h
@@ -442,7 +450,9 @@ data:
       year VARCHAR(255) NOT NULL,
       genre varchar(255) DEFAULT NULL
     );
-
+    INSERT INTO songs(song_id, name, artist, album, length, resource_id, year)
+    SELECT 0, 'Beat It', 'Michael Jackson', 'Thriller', '258', '0', '1982'
+    WHERE NOT EXISTS (SELECT s.song_id FROM songs s WHERE s.song_id = 0);
 
 ---
 # song-service database Service
