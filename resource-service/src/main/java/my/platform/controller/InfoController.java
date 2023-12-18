@@ -3,6 +3,7 @@ package my.platform.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import my.platform.service.InfoService;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,13 @@ import java.util.stream.Stream;
 public class InfoController {
 
     private final InfoService infoService;
+    private final BuildProperties buildProperties;
+
+    @GetMapping(value = "/v")
+    public ResponseEntity<String> getArtifactVersion() {
+        log.info("Endpoint-get-path=" + "/info/v");
+        return ResponseEntity.ok(buildProperties.getVersion());
+    }
 
     @GetMapping(value = "/status")
     public ResponseEntity<Map<String, String>> getStatus() {
