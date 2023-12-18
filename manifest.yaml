@@ -77,15 +77,22 @@ spec:
           image: andreirohau/resource-service:3
           ports:
             - containerPort: 8081
-          readinessProbe:
+          startupProbe:
             httpGet:
               path: /actuator/health
               port: 8081
-            initialDelaySeconds: 10
+            failureThreshold: 15
+            periodSeconds: 5
+            initialDelaySeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 20
             periodSeconds: 5
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/liveness
               port: 8081
             initialDelaySeconds: 30
             periodSeconds: 10
