@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
         - name: app-resource-service
-          image: andreirohau/resource-service:latest
+          image: andreirohau/resource-service:5
           ports:
             - containerPort: 8081
           env:

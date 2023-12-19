@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
         - name: app-song-service
-          image: andreirohau/song-service:latest
+          image: andreirohau/song-service:5
           ports:
             - containerPort: 8082
           env:

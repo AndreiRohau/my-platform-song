@@ -2,18 +2,18 @@ apiVersion: v2
 name: my-platform-song
 description: Helm chart
 type: application
-version: "5.0"
-appVersion: "5.0"
+version: "5"
+appVersion: "5"
 dependencies:
   - name: app-resource-service
     repository: file://./charts/app-resource-service
-    version: "5.0"
+    version: "5"
   - name: app-song-service
     repository: file://./charts/app-song-service
-    version: "5.0"
+    version: "5"
   - name: db-resource-service
     repository: file://./charts/db-resource-service
-    version: "1.0"
+    version: "1"
   - name: db-song-service
     repository: file://./charts/db-song-service
-    version: "1.0"
+    version: "1"
