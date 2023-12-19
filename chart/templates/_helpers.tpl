@@ -3,7 +3,7 @@ Defines common labels
 */}}
 {{- define "labels" }}
 labels:
-  version: {{ .Chart.Version }}
+  version: {{ .Chart.Version | quote }}
   date: {{ now | htmlDate }}
 {{- end }}
 {{- define "dbProbes" }}
@@ -26,12 +26,7 @@ readinessProbe:
   failureThreshold: 15
 livenessProbe:
   exec:
-    command:
-      - pg_isready
-      - -h
-      - localhost
-      - -p
-      - "5432"
+    command: ["pg_isready", "-U", "rsuser", "-d", "$(POSTGRES_DB)"]
   initialDelaySeconds: 15
   periodSeconds: 10
   failureThreshold: 3
