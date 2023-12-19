@@ -5,6 +5,7 @@ metadata:
   name: var-map
   namespace: k8s-program
 data:
+  SERVER_PORT: "8080"
   SERVER_ADDRESS: 0.0.0.0
   RS_DB_POSTGRES: resource_service_db
   RS_SPRING_DATASOURCE_URL: jdbc:postgresql://db-resource-service:5432/resource_service_db?createDatabaseIfNotExist=true&useSSL=false
@@ -17,5 +18,5 @@ data:
   SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 20MB
   SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 20MB
   VALIDATOR_PARAMETER_LENGTH: "200"
-  SONG_SERVICE_ADDRESS: http://app-song-service:8082
-  SONG_SERVICE_API_SAVE: http://app-song-service:8082/v1/api/songs
+  SONG_SERVICE_ADDRESS: http://app-song-service:8080
+  SONG_SERVICE_API_SAVE: http://app-song-service:8080/v1/api/songs

@@ -1,0 +1,29 @@
+# db-resource-service PersistentVolume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: app-resource-service-pv
+  namespace: k8s-program
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/app-data"
+
+---
+# db-resource-service PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-resource-service-pvc
+  namespace: k8s-program
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

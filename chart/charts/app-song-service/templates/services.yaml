@@ -1,34 +1,34 @@
 ---
-# resource-service Service
+# song-service Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-resource-service
+  name: app-song-service
   namespace: {{ .Values.global.namespace | default "k8s-program" }}
 {{- include "labels" . | indent 2 }}
 spec:
   type: NodePort
   selector:
-    app: app-resource-service
+    app: app-song-service
   ports:
     - protocol: TCP
-      port: 8081
-      targetPort: 8081
-      nodePort: 30001
+      port: 8080
+      targetPort: 8080
+      nodePort: 30003
 
 ---
-# resource-service Deployment
+# song-service Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-resource-service-deployment
+  name: app-song-service-deployment
   namespace: {{ .Values.global.namespace | default "k8s-program" }}
 {{- include "labels" . | indent 2 }}
 spec:
   replicas: {{ .Values.replicaCount | default 1 }}
   selector:
     matchLabels:
-      app: app-resource-service
+      app: app-song-service
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -37,44 +37,50 @@ spec:
   template:
     metadata:
 {{- include "labels" . | indent 6 }}
-        app: app-resource-service
+        app: app-song-service
     spec:
       containers:
-        - name: app-resource-service
-          image: andreirohau/resource-service:5
+        - name: app-song-service
+          image: andreirohau/song-service:5
           ports:
-            - containerPort: 8081
+            - containerPort: 8080
           env:
+            - name: SERVER_PORT
+              #              value: 0.0.0.0
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SERVER_PORT
             - name: SERVER_ADDRESS
               #              value: 0.0.0.0
               valueFrom:
                 configMapKeyRef:
                   name: var-map
                   key: SERVER_ADDRESS
-            - name: RS_DB_POSTGRES
-              #              value: resource_service_db
+            - name: SS_DB_POSTGRES
+              #              value: song_service_db
               valueFrom:
                 configMapKeyRef:
                   name: var-map
-                  key: RS_DB_POSTGRES
+                  key: SS_DB_POSTGRES
             - name: SPRING_DATASOURCE_URL
-              #              value: jdbc:postgresql://db-resource-service:5432/resource_service_db?createDatabaseIfNotExist=true&useSSL=false
+              #              value: jdbc:postgresql://db-song-service:5432/song_service_db?createDatabaseIfNotExist=true&useSSL=false
               valueFrom:
                 configMapKeyRef:
                   name: var-map
-                  key: RS_SPRING_DATASOURCE_URL
+                  key: SS_SPRING_DATASOURCE_URL
             - name: SPRING_DATASOURCE_USERNAME
-              #              value: rsuser
+              #              value: ssuser
               valueFrom:
                 secretKeyRef:
                   name: my-secrets
-                  key: RS_SPRING_DATASOURCE_USERNAME
+                  key: SS_SPRING_DATASOURCE_USERNAME
             - name: SPRING_DATASOURCE_PASSWORD
-              #              value: rspwd
+              #              value: sspwd
               valueFrom:
                 secretKeyRef:
                   name: my-secrets
-                  key: RS_SPRING_DATASOURCE_PASSWORD
+                  key: SS_SPRING_DATASOURCE_PASSWORD
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               #              value: update
               valueFrom:
@@ -117,23 +123,4 @@ spec:
                 configMapKeyRef:
                   name: var-map
                   key: VALIDATOR_PARAMETER_LENGTH
-            - name: SONG_SERVICE_ADDRESS
-              #              value: http://app-song-service:8082
-              valueFrom:
-                configMapKeyRef:
-                  name: var-map
-                  key: SONG_SERVICE_ADDRESS
-            - name: SONG_SERVICE_API_SAVE
-              #              value: http://app-song-service:8082/v1/api/songs
-              valueFrom:
-                configMapKeyRef:
-                  name: var-map
-                  key: SONG_SERVICE_API_SAVE
 {{- include "serviceProbes" . | indent 10 }}
-          volumeMounts:
-            - name: app-resource-service-volume
-              mountPath: "/app-data"
-      volumes:
-        - name: app-resource-service-volume
-          persistentVolumeClaim:
-            claimName: app-resource-service-pvc
