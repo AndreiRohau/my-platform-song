@@ -58,14 +58,14 @@ kubectl delete -f namespace.yaml
 kubectl delete pod app-resource-service-deployment-77d4ddd9c7-r6ksb -n=k8s-program
 
 ### Logs or info
-kubectl describe pods app-resource-service-deployment-75dd649f79-v6j8m -n=k8s-program
+kubectl describe pods app-song-service-deployment-7f67785669-r4wsn -n=k8s-program
 kubectl describe pods db-resource-service-statefulset-0 -n=k8s-program
 kubectl logs db-resource-service-statefulset-0 -n k8s-program
-kubectl logs app-resource-service-deployment-75dd649f79-v6j8m -n k8s-program
+kubectl logs app-song-service-deployment-7f67785669-r4wsn -n k8s-program
 
 ### Testing using terminal
 kubectl exec -it db-resource-service-statefulset-0 -n k8s-program -c db-resource-service -- /bin/bash
-kubectl exec -it app-resource-service-deployment-75dd649f79-bdrvv -n k8s-program -c app-resource-service -- /bin/bash
+kubectl exec -it app-resource-service-deployment-75dd649f79-45624 -n k8s-program -c app-resource-service -- /bin/bash
 
 cd ../app-data
 
