@@ -350,6 +350,20 @@ spec:
       labels:
         app: app-song-service
     spec:
+# dependent container that should start prior
+#      initContainers:
+#        - name: init-db
+#          image: busybox:1.31
+#          env:
+#            - name: SONG_DB_HOST
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: kube-config
+#                  key: SONG_DB_HOST
+#          command:
+#            - "/bin/sh"
+#            - "-c"
+#            - "until nc -vz $(SONG_DB_HOST) 5432; do sleep 3; done;"
       containers:
         - name: app-song-service
           image: andreirohau/song-service:latest

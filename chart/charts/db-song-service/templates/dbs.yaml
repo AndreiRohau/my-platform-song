@@ -1,0 +1,103 @@
+---
+# INIT SQL song-service database ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-song-service-init
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+{{- include "labels" . | indent 2 }}
+    app: db-song-service
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS public.songs (
+      song_id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      artist VARCHAR(255) NOT NULL,
+      album VARCHAR(255) NOT NULL,
+      length VARCHAR(255) NOT NULL,
+      resource_id VARCHAR(255) NOT NULL,
+      year VARCHAR(255) NOT NULL,
+      genre varchar(255) DEFAULT NULL
+    );
+    INSERT INTO songs(song_id, name, artist, album, length, resource_id, year)
+    SELECT 0, 'Beat It', 'Michael Jackson', 'Thriller', '258', '0', '1982'
+    WHERE NOT EXISTS (SELECT s.song_id FROM songs s WHERE s.song_id = 0);
+
+---
+# song-service database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-song-service
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+{{- include "labels" . | indent 2 }}
+spec:
+  type: ClusterIP
+  selector:
+    app: db-song-service
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+# song-service database StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-song-service-statefulset
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+{{- include "labels" . | indent 2 }}
+spec:
+  serviceName: db-song-service
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: db-song-service
+  template:
+    metadata:
+{{- include "labels" . | indent 6 }}
+        app: db-song-service
+    spec:
+      containers:
+        - name: db-song-service
+          image: postgres:13.1-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              #              value: song_service_db
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SS_DB_POSTGRES
+            - name: POSTGRES_USER
+              #              value: ssuser
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SS_SPRING_DATASOURCE_USERNAME
+            - name: POSTGRES_PASSWORD
+              #              value: sspwd
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SS_SPRING_DATASOURCE_PASSWORD
+          volumeMounts:
+            - name: db-song-service-init-volume
+              mountPath: /docker-entrypoint-initdb.d
+{{- include "dbProbes" . | indent 10 }}
+      volumes:
+        - name: db-song-service-init-volume
+          configMap:
+            name: db-song-service-init
+  volumeClaimTemplates:
+    - metadata:
+        name: db-song-service-volume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: hostpath
+        resources:
+          requests:
+            storage: 1Gi

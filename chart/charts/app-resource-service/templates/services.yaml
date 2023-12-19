@@ -1,0 +1,120 @@
+---
+# song-service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-song-service
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+{{- include "labels" . | indent 2 }}
+spec:
+  type: NodePort
+  selector:
+    app: app-song-service
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+      nodePort: 30003
+
+---
+# song-service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-song-service-deployment
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+{{- include "labels" . | indent 2 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: app-song-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+{{- include "labels" . | indent 6 }}
+        app: app-song-service
+    spec:
+      containers:
+        - name: app-song-service
+          image: andreirohau/song-service:latest
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SERVER_ADDRESS
+              #              value: 0.0.0.0
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SERVER_ADDRESS
+            - name: SS_DB_POSTGRES
+              #              value: song_service_db
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SS_DB_POSTGRES
+            - name: SPRING_DATASOURCE_URL
+              #              value: jdbc:postgresql://db-song-service:5432/song_service_db?createDatabaseIfNotExist=true&useSSL=false
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SS_SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              #              value: ssuser
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SS_SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              #              value: sspwd
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SS_SPRING_DATASOURCE_PASSWORD
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              #              value: update
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_HIBERNATE_DDL_AUTO
+            - name: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
+              #              value: "true"
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
+            - name: SPRING_DATASOURCE_DRIVERCLASSNAME
+              #              value: org.postgresql.Driver
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_DATASOURCE_DRIVERCLASSNAME
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+              #              value: org.hibernate.dialect.PostgreSQLDialect
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+            - name: SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE
+              #              value: 20MB
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE
+            - name: SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE
+              #              value: 20MB
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE
+            - name: VALIDATOR_PARAMETER_LENGTH
+              #              value: "200"
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: VALIDATOR_PARAMETER_LENGTH
+{{- include "serviceProbes" . | indent 10 }}

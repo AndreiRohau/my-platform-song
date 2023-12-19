@@ -1,0 +1,94 @@
+---
+## INIT SQL resource-service database ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-resource-service-init
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+{{- include "labels" . | indent 2 }}
+    app: db-resource-service
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS public.resources (
+      resource_id SERIAL PRIMARY KEY,
+      resource OID
+    );
+
+---
+# resource-service database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-resource-service
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+{{- include "labels" . | indent 2 }}
+spec:
+  type: ClusterIP
+  selector:
+    app: db-resource-service
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+# resource-service database StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-resource-service-statefulset
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+{{- include "labels" . | indent 2 }}
+spec:
+  serviceName: db-resource-service
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: db-resource-service
+  template:
+    metadata:
+{{- include "labels" . | indent 6 }}
+        app: db-resource-service
+    spec:
+      containers:
+        - name: db-resource-service
+          image: postgres:13.1-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              #              value: resource_service_db
+              valueFrom:
+                configMapKeyRef:
+                  name: var-map
+                  key: RS_DB_POSTGRES
+            - name: POSTGRES_USER
+              #              value: rsuser
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: RS_SPRING_DATASOURCE_USERNAME
+            - name: POSTGRES_PASSWORD
+              #              value: rspwd
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: RS_SPRING_DATASOURCE_PASSWORD
+          volumeMounts:
+            - name: db-resource-service-init-volume
+              mountPath: /docker-entrypoint-initdb.d
+{{- include "dbProbes" . | indent 10 }}
+      volumes:
+        - name: db-resource-service-init-volume
+          configMap:
+            name: db-resource-service-init
+  volumeClaimTemplates:
+    - metadata:
+        name: db-resource-service-volume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: hostpath
+        resources:
+          requests:
+            storage: 1Gi

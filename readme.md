@@ -84,5 +84,19 @@ kubectl port-forward pod-name 5433:5432
 (local machine port:container port) console command to temporarily open access to the database pod
 
 
+### Helm
+helm create my-platform-song
+helm list
+
+helm install my-platform-song --set namespace=k8s-program ./chart
+helm install my-platform-song --set global.namespace=k8s-program --set app-resource-service.replicaCount=1 --set app-song-service.replicaCount=1 ./chart
+
+helm upgrade my-platform-song --set global.namespace=k8s-program --set app-resource-service.replicaCount=1 ./chart
+
+helm uninstall my-platform-song
+
+helm template my-platform-song ./chart --debug
+
+
 
 

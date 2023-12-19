@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: var-map
+  namespace: k8s-program
+data:
+  SERVER_ADDRESS: 0.0.0.0
+  RS_DB_POSTGRES: resource_service_db
+  RS_SPRING_DATASOURCE_URL: jdbc:postgresql://db-resource-service:5432/resource_service_db?createDatabaseIfNotExist=true&useSSL=false
+  SS_DB_POSTGRES: song_service_db
+  SS_SPRING_DATASOURCE_URL: jdbc:postgresql://db-song-service:5432/song_service_db?createDatabaseIfNotExist=true&useSSL=false
+  SPRING_JPA_HIBERNATE_DDL_AUTO: update
+  SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: "true"
+  SPRING_DATASOURCE_DRIVERCLASSNAME: org.postgresql.Driver
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+  SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 20MB
+  SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 20MB
+  VALIDATOR_PARAMETER_LENGTH: "200"
+  SONG_SERVICE_ADDRESS: http://app-song-service:8082
+  SONG_SERVICE_API_SAVE: http://app-song-service:8082/v1/api/songs

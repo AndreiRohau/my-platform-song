@@ -1,0 +1,10 @@
+app-resource-service:
+  replicaCount: 2
+app-song-service:
+  replicaCount: 2
+db-resource-service:
+  replicaCount: 1
+db-song-service:
+  replicaCount: 1
+global:
+  namespace: k8s-program
