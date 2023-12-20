@@ -1,7 +1,7 @@
 app-resource-service:
-  replicaCount: 2
+  replicaCount: 1
 app-song-service:
-  replicaCount: 2
+  replicaCount: 1
 db-resource-service:
   replicaCount: 1
 db-song-service:

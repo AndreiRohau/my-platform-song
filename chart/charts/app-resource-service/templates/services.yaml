@@ -7,14 +7,13 @@ metadata:
   namespace: {{ .Values.global.namespace | default "k8s-program" }}
 {{- include "labels" . | indent 2 }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: app-resource-service
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
-      nodePort: 30001
 
 ---
 # resource-service Deployment

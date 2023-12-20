@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: {{ .Values.global.namespace | default "k8s-program" }}
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /v1/api/$1$2
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /api/(resources)(.*)
+            pathType: ImplementationSpecific
+#            pathType: Prefix
+            backend:
+              service:
+                name: app-resource-service
+                port:
+                  number: 80
+          - path: /api/(songs)(.*)
+            pathType: ImplementationSpecific
+#            pathType: Prefix
+            backend:
+              service:
+                name: app-song-service
+                port:
+                  number: 80
+                  # result app-song-service:80/v1/api/songs/

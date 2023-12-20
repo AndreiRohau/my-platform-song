@@ -37,8 +37,8 @@ startupProbe:
     path: /actuator/health
     port: 8080
   initialDelaySeconds: 25
-  periodSeconds: 15
-  failureThreshold: 15
+  periodSeconds: 5
+  failureThreshold: 5
 readinessProbe:
   httpGet:
     path: /actuator/health/readiness

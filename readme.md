@@ -58,10 +58,10 @@ kubectl delete -f namespace.yaml
 kubectl delete pod app-resource-service-deployment-77d4ddd9c7-r6ksb -n=k8s-program
 
 ### Logs or info
-kubectl describe pods app-song-service-deployment-7f67785669-r4wsn -n=k8s-program
+kubectl describe pods app-song-service-deployment-85454578cc-skvwn -n=k8s-program
 kubectl describe pods db-resource-service-statefulset-0 -n=k8s-program
 kubectl logs db-resource-service-statefulset-0 -n k8s-program
-kubectl logs app-song-service-deployment-7f67785669-r4wsn -n k8s-program
+kubectl logs app-song-service-deployment-85454578cc-skvwn -n k8s-program
 
 ### Testing using terminal
 kubectl exec -it db-resource-service-statefulset-0 -n k8s-program -c db-resource-service -- /bin/bash
@@ -97,6 +97,19 @@ helm uninstall my-platform-song
 
 helm template my-platform-song ./chart --debug
 
+### Ingress
+
+1st:
+install namespace k8s-program
+
+2nd, install ingres: 
+helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -n k8s-program
+
+3nd:
+run helm with proper network.yaml - for ingress
 
 
+
+
+kubectl port-forward -n k8s-program ingress-nginx-controller-9d95c9c54-ntjt4 8095:80
 
